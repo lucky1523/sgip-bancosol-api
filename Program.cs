@@ -15,7 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("OpenPolicy", policy =>
     {
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
@@ -25,15 +25,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.MapControllers();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI(c => {
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FinTech API V1");
+    c.RoutePrefix = string.Empty;
+});
 
 app.UseHttpsRedirection();
-app.UseCors("AllowNextjs");
-app.UseCors();
+app.UseCors("OpenPolicy");
+app.MapControllers();
 app.Run();
